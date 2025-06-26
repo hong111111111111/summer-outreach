@@ -18,16 +18,21 @@
 
     #logo {
       position: absolute;
-      top: 100px;
-      right: 100px;
-      width: 400px;
+      top: 20px;
+      right: 20px;
+      width: 400px; /* 5배 확대 */
+      filter: grayscale(100%) brightness(0); /* 검은색으로 보이게 */
       z-index: 1000;
+    }
+
+    .fire-icon {
+      font-size: 48px; /* 불 이모지 4배 확대 */
     }
   </style>
 </head>
 <body>
   <div id="map"></div>
-  <img src="seere.png" id="logo" alt="공동체 로고" />
+  <img src="resee.png" id="logo" alt="공동체 로고" />
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -36,30 +41,25 @@
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { firebaseConfig } from "./config.js";
 
-    // Firebase 초기화
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 지도 초기화
     const map = L.map('map').setView([36.5, 127.8], 7); // 대한민국 중심
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
     }).addTo(map);
 
-    // 불 마커 함수 (이모지)
     function addFireMarker(lat, lng) {
       const fireIcon = L.divIcon({
-        html: "🔥",
+        html: "<div class='fire-icon'>🔥</div>",
         className: '',
-        iconSize: [72, 72]
+        iconSize: [48, 48]
       });
       L.marker([lat, lng], { icon: fireIcon }).addTo(map);
     }
 
-    // 실시간 리스닝
     onSnapshot(collection(db, "outreach_prayers"), (snapshot) => {
-      // 기존 마커 제거
       map.eachLayer(layer => {
         if (layer instanceof L.Marker) map.removeLayer(layer);
       });
@@ -71,8 +71,8 @@
         const data = doc.data();
         const ts = data.timestamp?.toDate?.();
         if (ts && ts > hourAgo) {
-          const lat = 33 + Math.random() * 6;  // 위도
-          const lng = 124 + Math.random() * 6; // 경도
+          const lat = 33 + Math.random() * 6;
+          const lng = 124 + Math.random() * 6;
           addFireMarker(lat, lng);
         }
       });
