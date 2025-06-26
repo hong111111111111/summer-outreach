@@ -18,9 +18,9 @@
 
     #logo {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 80px;
+      top: 100px;
+      right: 100px;
+      width: 400px;
       z-index: 1000;
     }
   </style>
@@ -52,7 +52,7 @@
       const fireIcon = L.divIcon({
         html: "🔥",
         className: '',
-        iconSize: [48, 48]
+        iconSize: [72, 72]
       });
       L.marker([lat, lng], { icon: fireIcon }).addTo(map);
     }
