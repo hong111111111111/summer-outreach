@@ -1,10 +1,9 @@
-
 export const firebaseConfig = {
-  apiKey: "AIzaSyBNrqButtO47i3vr9p0V3WIHVPciPh5Pcg",
-  authDomain: "summer-outreach.firebaseapp.com",
-  projectId: "summer-outreach",
-  storageBucket: "summer-outreach.firebasestorage.app",
-  messagingSenderId: "737528313779",
-  appId: "1:737528313779:web:15166f777331a9cf9b3dc6",
-  measurementId: "G-1WG9S251RZ"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
 };

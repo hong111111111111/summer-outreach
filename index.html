@@ -1,56 +1,61 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>SUMMER OUTREACH</title>
+  <meta charset="UTF-8">
+  <title>SUMMER OUTREACH 기도 등록</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      background-color: #fffdee;
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      padding: 30px;
       text-align: center;
-      padding-top: 50px;
-      color: #2f7032;
     }
-    h1 { font-size: 2.5em; }
     input, button {
-      padding: 12px;
-      font-size: 1em;
-      margin: 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+      width: 300px;
+      max-width: 90%;
     }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
+    #message {
+      color: green;
+      font-weight: bold;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>SUMMER OUTREACH</h1>
-  <p>아웃리치를 향한 결단의 마음을 적으세요</p>
-  <input type="text" id="prayerInput" placeholder="기도를 적어주세요" />
-  <button onclick="submitPrayer()">기도했습니다</button>
+  <h2>아웃리치를 향한 결단의 마음을 적으세요</h2>
+  <form id="prayer-form">
+    <input type="text" id="prayer-input" placeholder="기도 제목" required />
+    <button type="submit">기도했습니다</button>
+  </form>
+  <div id="message"></div>
 
   <script type="module">
-    import {{ initializeApp }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {{ getFirestore, collection, addDoc, serverTimestamp }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import {{ firebaseConfig }} from "./config.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from './config.js';
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    window.submitPrayer = async function() {{
-      const input = document.getElementById('prayerInput');
-      if (input.value.trim()) {{
-        await addDoc(collection(db, "outreach_prayers"), {{
-          message: input.value.trim(),
-          timestamp: serverTimestamp()
-        }});
-        input.value = "";
-        alert("제출되었습니다");
-      }}
-    }}
+    const form = document.getElementById('prayer-form');
+    const input = document.getElementById('prayer-input');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      await addDoc(collection(db, "outreach_prayers"), {
+        text,
+        timestamp: serverTimestamp()
+      });
+      input.value = '';
+      message.textContent = '제출되었습니다!';
+    });
   </script>
 </body>
 </html>
