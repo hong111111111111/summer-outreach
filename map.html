@@ -1,7 +1,8 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>SUMMER OUTREACH 지도</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
@@ -17,7 +18,6 @@
     import {{ initializeApp }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {{ getFirestore, collection, getDocs }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import {{ firebaseConfig }} from "./config.js";
-
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
@@ -26,8 +26,8 @@
       minZoom: -1
     }});
 
-    const bounds = [[0,0], [1000,1000]];
-    const image = L.imageOverlay('summer-map.png', bounds).addTo(map);
+    const bounds = [[0, 0], [1024, 1536]];
+    const image = L.imageOverlay('south-korea-map.png', bounds).addTo(map);
     map.fitBounds(bounds);
 
     async function loadPrayers() {{
@@ -38,8 +38,8 @@
         const data = doc.data();
         const timestamp = data.timestamp?.toDate?.();
         if (timestamp && timestamp > hourAgo) {{
-          const x = Math.random() * 1000;
-          const y = Math.random() * 1000;
+          const x = Math.random() * 1536;
+          const y = Math.random() * 1024;
           const icon = L.icon({{
             iconUrl: 'prayer-dot.png',
             iconSize: [12, 12],
