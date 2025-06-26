@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,51 +5,57 @@
   <title>SUMMER OUTREACH 지도</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    #map {{
+    #map {
       width: 100vw;
       height: 100vh;
-    }}
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script type="module">
-    import {{ initializeApp }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {{ getFirestore, collection, getDocs }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import {{ firebaseConfig }} from "./config.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from "./config.js";
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const map = L.map('map', {{
+    const map = L.map('map', {
       crs: L.CRS.Simple,
       minZoom: -1
-    }});
+    });
 
     const bounds = [[0, 0], [1024, 1536]];
-    const image = L.imageOverlay('south-korea-map.png', bounds).addTo(map);
+    L.imageOverlay('south-korea-map.png', bounds).addTo(map);
     map.fitBounds(bounds);
 
-    async function loadPrayers() {{
+    async function loadPrayers() {
       const now = new Date();
       const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
       const snapshot = await getDocs(collection(db, "outreach_prayers"));
-      snapshot.forEach(doc => {{
+      snapshot.forEach(doc => {
         const data = doc.data();
-        const timestamp = data.timestamp?.toDate?.();
-        if (timestamp && timestamp > hourAgo) {{
+        const timestamp = data.timestamp && data.timestamp.toDate ? data.timestamp.toDate() : null;
+
+        if (timestamp && timestamp > hourAgo) {
           const x = Math.random() * 1536;
           const y = Math.random() * 1024;
-          const icon = L.icon({{
+
+          const icon = L.icon({
             iconUrl: 'prayer-dot.png',
             iconSize: [12, 12],
-          }});
-          L.marker([y, x], {{ icon }}).addTo(map);
-        }}
-      }});
-    }}
+          });
+
+          L.marker([y, x], { icon }).addTo(map);
+        }
+      });
+    }
 
     loadPrayers();
   </script>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>
