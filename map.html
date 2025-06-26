@@ -9,6 +9,10 @@
       width: 100vw;
       height: 100vh;
     }
+
+    .emoji-icon {
+      font-size: 24px;
+    }
   </style>
 </head>
 <body>
@@ -16,41 +20,42 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { firebaseConfig } from "./config.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const map = L.map('map').setView([36.5, 127.8], 7); // 대한민국 중앙 위치
+    const map = L.map('map').setView([36.5, 127.8], 7);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    async function loadPrayers() {
+    function isRecent(timestamp) {
       const now = new Date();
       const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-
-      const snapshot = await getDocs(collection(db, "outreach_prayers"));
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const timestamp = data.timestamp?.toDate?.();
-        if (timestamp && timestamp > hourAgo) {
-          const lat = 33 + Math.random() * 6;  // 대한민국 위도 범위
-          const lng = 124 + Math.random() * 6; // 대한민국 경도 범위
-          L.circleMarker([lat, lng], {
-            radius: 6,
-            fillColor: "#f03",
-            color: "#f03",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
-          }).addTo(map);
-        }
-      });
+      return timestamp && timestamp.toDate && timestamp.toDate() > hourAgo;
     }
 
-    loadPrayers();
+    onSnapshot(collection(db, "outreach_prayers"), snapshot => {
+      map.eachLayer(layer => {
+        if (layer instanceof L.Marker) map.removeLayer(layer); // clear previous
+      });
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const timestamp = data.timestamp;
+        if (isRecent(timestamp)) {
+          const lat = 33 + Math.random() * 6;
+          const lng = 124 + Math.random() * 6;
+          const emojiIcon = L.divIcon({
+            className: 'emoji-icon',
+            html: '🔥'
+          });
+          L.marker([lat, lng], { icon: emojiIcon }).addTo(map);
+        }
+      });
+    });
   </script>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
