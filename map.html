@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>SUMMER OUTREACH 지도</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     #map {
@@ -15,38 +14,37 @@
 <body>
   <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { firebaseConfig } from './config.js';
+    import { firebaseConfig } from "./config.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const map = L.map('map').setView([36.5, 127.5], 7); // Korea center
-
+    const map = L.map('map').setView([36.5, 127.8], 7); // 대한민국 중앙 위치
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+      attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
     async function loadPrayers() {
       const now = new Date();
       const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
       const snapshot = await getDocs(collection(db, "outreach_prayers"));
       snapshot.forEach(doc => {
         const data = doc.data();
         const timestamp = data.timestamp?.toDate?.();
         if (timestamp && timestamp > hourAgo) {
-          const lat = 33 + Math.random() * 7; // Random in South Korea bounds
-          const lng = 124 + Math.random() * 6;
+          const lat = 33 + Math.random() * 6;  // 대한민국 위도 범위
+          const lng = 124 + Math.random() * 6; // 대한민국 경도 범위
           L.circleMarker([lat, lng], {
             radius: 6,
             fillColor: "#f03",
             color: "#f03",
             weight: 1,
             opacity: 1,
-            fillOpacity: 0.7
+            fillOpacity: 0.8
           }).addTo(map);
         }
       });
@@ -54,5 +52,7 @@
 
     loadPrayers();
   </script>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>
