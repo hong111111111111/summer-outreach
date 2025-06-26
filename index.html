@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SUMMER OUTREACH</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin: 20px;
+      color: #0a6847;
+    }
+    #map {
+      width: 90%;
+      height: 400px;
+      margin-bottom: 20px;
+      border: 2px solid #ccc;
+    }
+    #memo-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    textarea {
+      width: 300px;
+      height: 80px;
+      font-size: 14px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #999;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #0a6847;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+</head>
+<body>
+  <h1>SUMMER OUTREACH</h1>
+  <div id="map"></div>
+  <div id="memo-section">
+    <label for="memo">아웃리치를 향한 결단의 마음을 적으세요</label>
+    <textarea id="memo" placeholder="예: 주님, 저를 사용해주세요!"></textarea>
+    <button id="prayBtn">기도했습니다</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, deleteDoc, getDocs, doc, Timestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from './config.js';
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const map = L.map('map').setView([37.5665, 126.9780], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+    }).addTo(map);
+
+    const prayBtn = document.getElementById('prayBtn');
+    const memoInput = document.getElementById('memo');
+
+    prayBtn.addEventListener('click', async () => {
+      const memo = memoInput.value.trim();
+      if (!memo) return alert("결단의 메시지를 작성해주세요");
+
+      const lat = 37.5665;
+      const lng = 126.9780;
+
+      await addDoc(collection(db, "prayers"), {
+        message: memo,
+        timestamp: Timestamp.now(),
+        lat,
+        lng
+      });
+
+      memoInput.value = '';
+      alert("기도가 등록되었습니다");
+      loadPrayers();
+    });
+
+    async function loadPrayers() {
+      const snap = await getDocs(collection(db, "prayers"));
+      const now = Timestamp.now();
+      snap.forEach(async docSnap => {
+        const data = docSnap.data();
+        const age = now.seconds - data.timestamp.seconds;
+        if (age > 3600) {
+          await deleteDoc(doc(db, "prayers", docSnap.id));
+        } else {
+          L.circle([data.lat, data.lng], {
+            color: 'yellow',
+            fillColor: '#ff0',
+            fillOpacity: 0.5,
+            radius: 20000
+          }).addTo(map).bindPopup(data.message);
+        }
+      });
+    }
+
+    loadPrayers();
+  </script>
+</body>
+</html>
