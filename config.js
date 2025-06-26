@@ -1,4 +1,3 @@
-// config.js
 export const firebaseConfig = {
   apiKey: "AIzaSyBNrqButtO47i3vr9p0V3WIHVPciPh5Pcg",
   authDomain: "summer-outreach.firebaseapp.com",
