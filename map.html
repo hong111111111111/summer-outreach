@@ -32,7 +32,7 @@
 </head>
 <body>
   <div id="map"></div>
-  <img src="resee.png" id="logo" alt="공동체 로고" />
+  <img src="seere.png" id="logo" alt="공동체 로고" />
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -54,7 +54,7 @@
       const fireIcon = L.divIcon({
         html: "<div class='fire-icon'>🔥</div>",
         className: '',
-        iconSize: [80, 80]
+        iconSize: [48, 48]
       });
       L.marker([lat, lng], { icon: fireIcon }).addTo(map);
     }
