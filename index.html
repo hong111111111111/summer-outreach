@@ -1,60 +1,117 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>SUMMER OUTREACH 기도 등록</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <title>SUMMER OUTREACH - 기도 입력</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f8ff;
-      padding: 30px;
-      text-align: center;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f1fdf4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      color: #222;
     }
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      margin: 10px;
-      width: 300px;
-      max-width: 90%;
+
+    h1 {
+      font-size: 2.5rem;
+      color: #2e7d32;
+      margin-bottom: 0.5rem;
     }
-    #message {
-      color: green;
+
+    p {
+      font-size: 1.2rem;
+      color: #4b4b4b;
+      margin-bottom: 2rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: 2px solid #81c784;
+      border-radius: 12px;
+      outline: none;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      background-color: #43a047;
+      color: white;
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #388e3c;
+    }
+
+    #submit-msg {
+      margin-top: 1.5rem;
+      color: #2e7d32;
       font-weight: bold;
-      margin-top: 20px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    #submit-msg.visible {
+      opacity: 1;
     }
   </style>
 </head>
 <body>
-  <h2>아웃리치를 향한 결단의 마음을 적으세요</h2>
+  <h1>SUMMER OUTREACH</h1>
+  <p>아웃리치를 향한 결단의 마음을 적으세요</p>
+
   <form id="prayer-form">
-    <input type="text" id="prayer-input" placeholder="기도 제목" required />
-    <button type="submit">기도했습니다</button>
+    <input type="text" id="prayer-input" placeholder="예: 팀원들을 위해 기도합니다" required />
+    <button type="submit">기도했습니다 🙏</button>
   </form>
-  <div id="message"></div>
+
+  <div id="submit-msg">제출되었습니다!</div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { firebaseConfig } from './config.js';
+    import {
+      getFirestore, collection, addDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from "./config.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const form = document.getElementById('prayer-form');
-    const input = document.getElementById('prayer-input');
-    const message = document.getElementById('message');
+    const form = document.getElementById("prayer-form");
+    const input = document.getElementById("prayer-input");
+    const msg = document.getElementById("submit-msg");
 
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const text = input.value.trim();
       if (!text) return;
+
       await addDoc(collection(db, "outreach_prayers"), {
-        text,
+        message: text,
         timestamp: serverTimestamp()
       });
-      input.value = '';
-      message.textContent = '제출되었습니다!';
+
+      input.value = "";
+      msg.classList.add("visible");
+      setTimeout(() => msg.classList.remove("visible"), 3000);
     });
   </script>
 </body>
