@@ -10,14 +10,24 @@
       padding: 0;
       height: 100%;
     }
+
     #map {
       width: 100%;
       height: 100%;
+    }
+
+    #logo {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 80px;
+      z-index: 1000;
     }
   </style>
 </head>
 <body>
   <div id="map"></div>
+  <img src="resee.png" id="logo" alt="공동체 로고" />
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -30,14 +40,14 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 지도 생성 (Leaflet)
-    const map = L.map('map').setView([36.5, 127.8], 7); // 대한민국 중심 좌표
+    // 지도 초기화
+    const map = L.map('map').setView([36.5, 127.8], 7); // 대한민국 중심
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap',
+      attribution: '© OpenStreetMap contributors',
     }).addTo(map);
 
-    // 불 모양 이모지 마커 추가 함수
+    // 불 마커 함수 (이모지)
     function addFireMarker(lat, lng) {
       const fireIcon = L.divIcon({
         html: "🔥",
@@ -47,8 +57,9 @@
       L.marker([lat, lng], { icon: fireIcon }).addTo(map);
     }
 
-    // 실시간 데이터 반영
+    // 실시간 리스닝
     onSnapshot(collection(db, "outreach_prayers"), (snapshot) => {
+      // 기존 마커 제거
       map.eachLayer(layer => {
         if (layer instanceof L.Marker) map.removeLayer(layer);
       });
@@ -60,8 +71,8 @@
         const data = doc.data();
         const ts = data.timestamp?.toDate?.();
         if (ts && ts > hourAgo) {
-          const lat = 33 + Math.random() * 6; // 위도 범위: 한반도 남북
-          const lng = 124 + Math.random() * 6; // 경도 범위: 동서
+          const lat = 33 + Math.random() * 6;  // 위도
+          const lng = 124 + Math.random() * 6; // 경도
           addFireMarker(lat, lng);
         }
       });
