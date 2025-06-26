@@ -15,32 +15,36 @@
   <div id="map"></div>
   <script type="module">
     import {{ initializeApp }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {{ getFirestore, collection, getDocs, query, where }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import {{ getFirestore, collection, getDocs }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import {{ firebaseConfig }} from "./config.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const map = L.map('map').setView([37.5, 127], 7);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {{
-      attribution: '© OpenStreetMap'
-    }}).addTo(map);
+    const map = L.map('map', {{
+      crs: L.CRS.Simple,
+      minZoom: -1
+    }});
+
+    const bounds = [[0,0], [1000,1000]];
+    const image = L.imageOverlay('summer-map.png', bounds).addTo(map);
+    map.fitBounds(bounds);
 
     async function loadPrayers() {{
       const now = new Date();
       const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-      const snapshot = await getDocs(query(collection(db, "outreach_prayers")));
+      const snapshot = await getDocs(collection(db, "outreach_prayers"));
       snapshot.forEach(doc => {{
         const data = doc.data();
         const timestamp = data.timestamp?.toDate?.();
         if (timestamp && timestamp > hourAgo) {{
-          const lat = 33 + Math.random() * 6;
-          const lng = 125 + Math.random() * 7;
+          const x = Math.random() * 1000;
+          const y = Math.random() * 1000;
           const icon = L.icon({{
             iconUrl: 'prayer-dot.png',
             iconSize: [12, 12],
           }});
-          L.marker([lat, lng], {{ icon }}).addTo(map);
+          L.marker([y, x], {{ icon }}).addTo(map);
         }}
       }});
     }}
