@@ -1,6 +1,6 @@
 
 export const firebaseConfig = {
- apiKey: "AIzaSyBNrqButtO47i3vr9p0V3WIHVPciPh5Pcg",
+  apiKey: "AIzaSyBNrqButtO47i3vr9p0V3WIHVPciPh5Pcg",
   authDomain: "summer-outreach.firebaseapp.com",
   projectId: "summer-outreach",
   storageBucket: "summer-outreach.firebasestorage.app",
