@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>SUMMER OUTREACH 지도</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {{
+      width: 100vw;
+      height: 100vh;
+    }}
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script type="module">
+    import {{ initializeApp }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {{ getFirestore, collection, getDocs, query, where }} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import {{ firebaseConfig }} from "./config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const map = L.map('map').setView([37.5, 127], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {{
+      attribution: '© OpenStreetMap'
+    }}).addTo(map);
+
+    async function loadPrayers() {{
+      const now = new Date();
+      const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+      const snapshot = await getDocs(query(collection(db, "outreach_prayers")));
+      snapshot.forEach(doc => {{
+        const data = doc.data();
+        const timestamp = data.timestamp?.toDate?.();
+        if (timestamp && timestamp > hourAgo) {{
+          const lat = 33 + Math.random() * 6;
+          const lng = 125 + Math.random() * 7;
+          const icon = L.icon({{
+            iconUrl: 'prayer-dot.png',
+            iconSize: [12, 12],
+          }});
+          L.marker([lat, lng], {{ icon }}).addTo(map);
+        }}
+      }});
+    }}
+
+    loadPrayers();
+  </script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</body>
+</html>
