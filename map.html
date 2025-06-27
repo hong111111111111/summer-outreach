@@ -28,11 +28,33 @@
     .fire-icon {
       font-size: 48px; /* 불 이모지 4배 확대 */
     }
+
+    #stream {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 20px;
+      z-index: 1000;
+      color: #ff4500;
+      font-weight: bold;
+    }
+    .stream-item {
+      display: inline-block;
+      margin-right: 30px;
+      animation: scroll 20s linear infinite;
+    }
+    @keyframes scroll {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
   <img src="seere.png" id="logo" alt="공동체 로고" />
+  <div id="stream"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -44,11 +66,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const map = L.map('map').setView([36.5, 127.8], 7); // 대한민국 중심
-
+    const map = L.map('map').setView([36.5, 127.8], 7);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
     }).addTo(map);
+
+    const stream = document.getElementById('stream');
 
     function addFireMarker(lat, lng) {
       const fireIcon = L.divIcon({
@@ -59,10 +82,18 @@
       L.marker([lat, lng], { icon: fireIcon }).addTo(map);
     }
 
+    function addToStream(message) {
+      const span = document.createElement('span');
+      span.className = 'stream-item';
+      span.textContent = message;
+      stream.appendChild(span);
+    }
+
     onSnapshot(collection(db, "outreach_prayers"), (snapshot) => {
       map.eachLayer(layer => {
         if (layer instanceof L.Marker) map.removeLayer(layer);
       });
+      stream.innerHTML = '';
 
       const now = new Date();
       const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
@@ -74,11 +105,11 @@
           const lat = 33 + Math.random() * 6;
           const lng = 124 + Math.random() * 6;
           addFireMarker(lat, lng);
+          addToStream(data.message || '기도했습니다');
         }
       });
     });
   </script>
-
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>
