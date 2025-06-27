@@ -9,6 +9,7 @@
       margin: 0;
       padding: 0;
       height: 100%;
+      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
     }
 
     #map {
@@ -20,41 +21,47 @@
       position: absolute;
       top: 20px;
       right: 20px;
-      width: 400px; /* 5배 확대 */
-      filter: grayscale(100%) brightness(0); /* 검은색으로 보이게 */
+      width: 400px;
+      filter: grayscale(100%) brightness(0);
       z-index: 1000;
     }
 
     .fire-icon {
-      font-size: 48px; /* 불 이모지 4배 확대 */
+      font-size: 48px;
     }
 
-    #stream {
+    #comment-box {
       position: absolute;
-      bottom: 20px;
-      width: 100%;
-      overflow: hidden;
-      white-space: nowrap;
-      font-size: 20px;
+      top: 0;
+      right: 0;
+      width: 20%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.4);
       z-index: 1000;
-      color: #ff4500;
-      font-weight: bold;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column-reverse;
+      padding: 10px;
     }
-    .stream-item {
-      display: inline-block;
-      margin-right: 30px;
-      animation: scroll 20s linear infinite;
-    }
-    @keyframes scroll {
-      from { transform: translateX(100%); }
-      to { transform: translateX(-100%); }
+
+    .bubble {
+      background: #fff;
+      color: #000;
+      padding: 8px 12px;
+      margin: 6px 0;
+      border-radius: 15px;
+      align-self: flex-start;
+      max-width: 90%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      font-size: 16px;
+      word-break: break-word;
     }
   </style>
 </head>
 <body>
   <div id="map"></div>
   <img src="seere.png" id="logo" alt="공동체 로고" />
-  <div id="stream"></div>
+  <div id="comment-box"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -71,7 +78,7 @@
       attribution: '© OpenStreetMap contributors',
     }).addTo(map);
 
-    const stream = document.getElementById('stream');
+    const commentBox = document.getElementById('comment-box');
 
     function addFireMarker(lat, lng) {
       const fireIcon = L.divIcon({
@@ -82,18 +89,21 @@
       L.marker([lat, lng], { icon: fireIcon }).addTo(map);
     }
 
-    function addToStream(message) {
-      const span = document.createElement('span');
-      span.className = 'stream-item';
-      span.textContent = message;
-      stream.appendChild(span);
+    function addComment(message) {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = message;
+      commentBox.appendChild(bubble);
+      if (commentBox.children.length > 15) {
+        commentBox.removeChild(commentBox.firstChild);
+      }
     }
 
     onSnapshot(collection(db, "outreach_prayers"), (snapshot) => {
       map.eachLayer(layer => {
         if (layer instanceof L.Marker) map.removeLayer(layer);
       });
-      stream.innerHTML = '';
+      commentBox.innerHTML = '';
 
       const now = new Date();
       const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
@@ -105,11 +115,12 @@
           const lat = 33 + Math.random() * 6;
           const lng = 124 + Math.random() * 6;
           addFireMarker(lat, lng);
-          addToStream(data.message || '기도했습니다');
+          addComment(data.message || '기도했습니다');
         }
       });
     });
   </script>
+
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>
