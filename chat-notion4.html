@@ -24,7 +24,7 @@
     }
 
     .bubble {
-      background: rgba(200, 255, 200, 0.5); /* 연한 녹색 배경, 약간 투명 */
+      background: rgba(200, 255, 200, 0.5);
       color: #222;
       padding: 6px 10px;
       margin: 4px 0;
@@ -56,10 +56,15 @@
 
     const commentBox = document.getElementById('comment-box');
 
+    function getRandomHeart() {
+      const hearts = ['💚', '💛', '❤️']; // 초록, 노랑, 빨강 하트
+      return hearts[Math.floor(Math.random() * hearts.length)];
+    }
+
     function addComment(message) {
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
-      bubble.textContent = message;
+      bubble.textContent = `${getRandomHeart()} ${message}`;
       commentBox.appendChild(bubble);
       commentBox.scrollTop = commentBox.scrollHeight;
     }
