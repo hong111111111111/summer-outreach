@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>기도 입력 폼 (Notion Embed용)</title>
+  <title>SUMMER OUTREACH - 기도 입력</title>
   <style>
     * {
       box-sizing: border-box;
@@ -11,14 +11,30 @@
 
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: transparent;
+      background-color: #f1fdf4;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      padding: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 16px;
       margin: 0;
       color: #222;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #2e7d32;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #4b4b4b;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      padding: 0 10px;
     }
 
     form {
@@ -56,7 +72,7 @@
     }
 
     #submit-msg {
-      margin-top: 1rem;
+      margin-top: 1.2rem;
       color: #2e7d32;
       font-weight: bold;
       opacity: 0;
@@ -67,13 +83,32 @@
     #submit-msg.visible {
       opacity: 1;
     }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      p {
+        font-size: 0.95rem;
+      }
+
+      button {
+        font-size: 1rem;
+        padding: 12px;
+      }
+    }
   </style>
 </head>
 <body>
+  <h1>SUMMER OUTREACH</h1>
+  <p>팀을 향한 축복의 마음을 적으세요</p>
+
   <form id="prayer-form">
-    <input type="text" id="prayer-input" placeholder="예: 사랑하고 축복합니다!" required />
+    <input type="text" id="prayer-input" placeholder="예: 팀원들을 위해 기도합니다" required />
     <button type="submit">축복합니다 🙏</button>
   </form>
+
   <div id="submit-msg">제출되었습니다!</div>
 
   <script type="module">
