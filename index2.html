@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>기도 입력 폼 (Notion Embed용)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      margin: 0;
+      color: #222;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 1rem;
+      border: 2px solid #81c784;
+      border-radius: 12px;
+      outline: none;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      width: 100%;
+      background-color: #43a047;
+      color: white;
+      padding: 14px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #388e3c;
+    }
+
+    #submit-msg {
+      margin-top: 1rem;
+      color: #2e7d32;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      text-align: center;
+    }
+
+    #submit-msg.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <form id="prayer-form">
+    <input type="text" id="prayer-input" placeholder="예: 사랑하고 축복합니다!" required />
+    <button type="submit">축복합니다 🙏</button>
+  </form>
+  <div id="submit-msg">제출되었습니다!</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from "./config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("prayer-form");
+    const input = document.getElementById("prayer-input");
+    const msg = document.getElementById("submit-msg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      await addDoc(collection(db, "outreach_prayers"), {
+        message: text,
+        timestamp: serverTimestamp()
+      });
+
+      input.value = "";
+      msg.classList.add("visible");
+      setTimeout(() => msg.classList.remove("visible"), 3000);
+    });
+  </script>
+</body>
+</html>
