@@ -23,6 +23,16 @@
       text-align: center;
       line-height: 1;
     }
+
+    .pulse-heart {
+      animation: beat 1.2s infinite;
+      transform-origin: center;
+    }
+
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+    }
   </style>
 </head>
 <body>
@@ -59,8 +69,8 @@
 
     function addMarker(lat, lng) {
       const icon = L.divIcon({
-        html: `<div class='icon-marker'>${getRandomHeart()}</div>`,
-        className: 'icon-marker',
+        html: `<div class="icon-marker pulse-heart">${getRandomHeart()}</div>`,
+        className: '',
         iconSize: [20, 20]
       });
       L.marker([lat, lng], { icon }).addTo(map);
