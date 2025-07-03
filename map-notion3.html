@@ -38,8 +38,10 @@
 
     const map = L.map('map', {
       zoomControl: false,
-      attributionControl: false
-    }).setView([9.145, 40.4897], 5); // 에티오피아 중심
+      attributionControl: false,
+      minZoom: 4,
+      maxZoom: 7,
+    }).setView([9.145, 40.4897], 5);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '',
@@ -65,13 +67,16 @@
       snapshot.forEach(doc => {
         const data = doc.data();
         const ts = data.timestamp?.toDate?.();
+
         if (ts && ts > hourAgo) {
           let lat = data.lat;
           let lng = data.lng;
+
           if (typeof lat !== 'number' || typeof lng !== 'number') {
             lat = 5 + Math.random() * 6;
             lng = 34 + Math.random() * 9;
           }
+
           addMarker(lat, lng);
         }
       });
