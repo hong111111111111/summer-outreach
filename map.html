@@ -42,7 +42,7 @@
       position: absolute;
       top: 0;
       right: 0;
-      width: 40%;
+      width: 20%;  /* 채팅창 너비: 20% */
       height: 100%;
       background-color: rgba(255, 255, 255, 0.4);
       z-index: 1000;
@@ -61,7 +61,7 @@
       align-self: flex-start;
       max-width: 90%;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      font-size: 18px;
+      font-size: 36px;  /* 폰트 두 배 키움 */
       word-break: break-word;
     }
   </style>
@@ -82,7 +82,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 지도 중심: 에티오피아
     const map = L.map('map').setView([9.145, 40.4897], 6);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -92,12 +91,11 @@
 
     function addMarker(lat, lng) {
       const icon = L.divIcon({
-        // 이모지 선택: ✝️ 또는 ❤️‍🔥 로 바꿔도 됩니다
-        html: "<div class='icon-marker'>✝️</div>",
+        html: "<div class='icon-marker'>✝️</div>",  // 또는 ❤️‍🔥
         className: '',
         iconSize: [64, 64]
       });
-      L.marker([lat, lng], { icon: icon }).addTo(map);
+      L.marker([lat, lng], { icon }).addTo(map);
     }
 
     function addComment(message) {
@@ -122,10 +120,14 @@
       snapshot.forEach(doc => {
         const data = doc.data();
         const ts = data.timestamp?.toDate?.();
+
         if (ts && ts > hourAgo) {
-          const lat = 3 + Math.random() * 7;   // 위도 범위: 3~10 (에티오피아)
-          const lng = 33 + Math.random() * 9;  // 경도 범위: 33~42
-          addMarker(lat, lng);
+          const lat = data.lat;
+          const lng = data.lng;
+
+          if (typeof lat === 'number' && typeof lng === 'number') {
+            addMarker(lat, lng);
+          }
           addComment(data.message || '기도했습니다');
         }
       });
