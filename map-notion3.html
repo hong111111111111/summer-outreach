@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>기도 지도</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    .icon-marker {
+      font-size: 20px;
+      font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+      text-align: center;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from "./config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const map = L.map('map', {
+      zoomControl: false,
+      attributionControl: false
+    }).setView([9.145, 40.4897], 5); // 에티오피아 중심
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '',
+    }).addTo(map);
+
+    function addMarker(lat, lng) {
+      const icon = L.divIcon({
+        html: "<div class='icon-marker'>✝️</div>",
+        className: 'icon-marker',
+        iconSize: [20, 20]
+      });
+      L.marker([lat, lng], { icon }).addTo(map);
+    }
+
+    onSnapshot(collection(db, "outreach_prayers"), (snapshot) => {
+      map.eachLayer(layer => {
+        if (layer instanceof L.Marker) map.removeLayer(layer);
+      });
+
+      const now = new Date();
+      const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const ts = data.timestamp?.toDate?.();
+        if (ts && ts > hourAgo) {
+          let lat = data.lat;
+          let lng = data.lng;
+          if (typeof lat !== 'number' || typeof lng !== 'number') {
+            lat = 5 + Math.random() * 6;
+            lng = 34 + Math.random() * 9;
+          }
+          addMarker(lat, lng);
+        }
+      });
+    });
+  </script>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</body>
+</html>
