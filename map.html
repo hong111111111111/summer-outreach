@@ -36,13 +36,16 @@
 
     .icon-marker {
       font-size: 64px;
+      font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+      line-height: 1;
+      text-align: center;
     }
 
     #comment-box {
       position: absolute;
       top: 0;
       right: 0;
-      width: 20%;  /* 채팅창 너비: 20% */
+      width: 20%;
       height: 100%;
       background-color: rgba(255, 255, 255, 0.4);
       z-index: 1000;
@@ -61,7 +64,7 @@
       align-self: flex-start;
       max-width: 90%;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      font-size: 36px;  /* 폰트 두 배 키움 */
+      font-size: 36px;
       word-break: break-word;
     }
   </style>
@@ -91,8 +94,8 @@
 
     function addMarker(lat, lng) {
       const icon = L.divIcon({
-        html: "<div class='icon-marker'>✝️</div>",  // 또는 ❤️‍🔥
-        className: '',
+        html: "<div class='icon-marker'>✝️</div>",  // ✝️ 또는 ❤️‍🔥 사용 가능
+        className: 'icon-marker',
         iconSize: [64, 64]
       });
       L.marker([lat, lng], { icon }).addTo(map);
@@ -122,12 +125,16 @@
         const ts = data.timestamp?.toDate?.();
 
         if (ts && ts > hourAgo) {
-          const lat = data.lat;
-          const lng = data.lng;
+          let lat = data.lat;
+          let lng = data.lng;
 
-          if (typeof lat === 'number' && typeof lng === 'number') {
-            addMarker(lat, lng);
+          // lat/lng 없으면 fallback 좌표 사용
+          if (typeof lat !== 'number' || typeof lng !== 'number') {
+            lat = 3 + Math.random() * 7;
+            lng = 33 + Math.random() * 9;
           }
+
+          addMarker(lat, lng);
           addComment(data.message || '기도했습니다');
         }
       });
